@@ -1,0 +1,46 @@
+name: Linters and Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        id: setup-python
+        with:
+          python-version: 3.12
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ruff
+        run: |
+          ruff check
+          ruff check --fix
+          ruff format
+
+      - name: Pylint
+        run: pylint $(git ls-files '*.py')
+
+      - name: Prepare the mypy cache directory
+        run: mkdir .mypy_cache
+
+      - name: Mypy
+        run: mypy --install-types --check-untyped-defs --non-interactive --cache-dir=.mypy_cache/ .
+
+      - name: Pytest
+        run: pytest --showlocals --tb=auto -ra
