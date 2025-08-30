@@ -8,6 +8,7 @@ pluggy==1.6.0
 Pygments==2.19.2
 pytest==8.4.1
 pytest-django==4.11.1
+ruff==0.12.11
 sqlparse==0.5.3
 types-psycopg2==2.9.21.20250809
 typing_extensions==4.15.0
