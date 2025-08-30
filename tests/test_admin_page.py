@@ -1,10 +1,7 @@
 import pytest
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse
-
-User = get_user_model()
-UserType = type[User]
 
 
 @pytest.mark.django_db
@@ -17,12 +14,10 @@ def test_render_admin_login(client: Client):
 
 
 @pytest.mark.django_db
-def test_admin_redirect_if_not_superuser(
-    client: Client, django_user_model: UserType
+def test_admin_redirect_if_not_superuseer(
+    client: Client, django_user_model: User
 ):
-    user = django_user_model.objects.create_user(
-        username="john", password="pass1234"
-    )
+    user = django_user_model.objects.create_user("john", password="pass1234")
     client.force_login(user)
     url = reverse("admin:index")
 
@@ -30,15 +25,13 @@ def test_admin_redirect_if_not_superuser(
 
     assert response.status_code == 302
     assert response.content == b""
-    assert response.headers["Location"] == "/admin/login/?next=/admin/"
+    assert response.url == "/admin/login/?next=/admin/"  # type: ignore[attr-defined]
 
 
 @pytest.mark.django_db
-def test_admin_success_for_superuser(
-    client: Client, django_user_model: UserType
-):
+def test_admin_success_for_superuser(client: Client, django_user_model: User):
     user = django_user_model.objects.create_user(
-        username="john", password="pass1234", is_superuser=True, is_staff=True
+        "john", password="pass1234", is_superuser=True, is_staff=True
     )
     client.force_login(user)
     url = reverse("admin:index")
