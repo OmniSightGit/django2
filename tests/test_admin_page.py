@@ -1,7 +1,10 @@
 import pytest
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.test import Client
 from django.urls import reverse
+
+User = get_user_model()
+UserType = type[User]
 
 
 @pytest.mark.django_db
@@ -15,7 +18,7 @@ def test_render_admin_login(client: Client):
 
 @pytest.mark.django_db
 def test_admin_redirect_if_not_superuser(
-    client: Client, django_user_model: User
+    client: Client, django_user_model: UserType
 ):
     user = django_user_model.objects.create_user(
         username="john", password="pass1234"
@@ -31,7 +34,9 @@ def test_admin_redirect_if_not_superuser(
 
 
 @pytest.mark.django_db
-def test_admin_success_for_superuser(client: Client, django_user_model: User):
+def test_admin_success_for_superuser(
+    client: Client, django_user_model: UserType
+):
     user = django_user_model.objects.create_user(
         username="john", password="pass1234", is_superuser=True, is_staff=True
     )
