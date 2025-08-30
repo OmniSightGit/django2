@@ -82,3 +82,37 @@ mypy_path = "./mysite"
 [tool.django-stubs]
 django_settings_module = "mysite.settings"
 ignore_missing_model_attributes = true
+
+[tool.poe.tasks.test]
+help = "Pytest."
+cmd = "pytest --showlocals --tb=auto -ra --cov-branch --cov-report=term-missing"
+
+[tool.poe.tasks.mypy]
+cmd = "mypy --install-types --check-untyped-defs ."
+
+[tool.poe.tasks.pylint]
+cmd = "pylint tests mysite"
+
+[tool.poe.tasks.ruff]
+cmd = "ruff check ."
+
+[tool.poe.tasks.check]
+sequence = ["mypy", "pylint", "ruff"]
+
+[tool.poe.tasks.format]
+cmd = "ruff format ."
+
+[tool.poe.tasks.dev]
+help = "Run development server."
+cmd = "python manage.py runserver 127.0.0.1:8001"
+
+[tool.poe.tasks.makemigrations]
+help = "Generate new migrations."
+cmd = "python manage.py makemigrations"
+
+[tool.poe.tasks.migrate]
+help = "Migrate existing migrations."
+cmd = "python manage.py migrate"
+
+[tool.poe.tasks.manage]
+cmd = "python manage.py"
